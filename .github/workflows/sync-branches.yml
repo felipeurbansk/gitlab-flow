@@ -6,7 +6,7 @@ on:
       - production
 
 permissions:
-  contents: write # Permitir o GitHub Actions fazer push e merge nas branches
+  contents: write
 
 jobs:
   sync_branches:
@@ -14,27 +14,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository
-      - name: Checkout repository
-        uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # Isso garante que todas as branches remotas sejam buscadas
 
-      # Step 2: Configure Git user
-      - name: Set Git User
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@users.noreply.github.com"
+    - name: Set Git User
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-      # Step 3: Merge production into develop
-      - name: Merge production into develop
-        run: |
-          git checkout develop
-          git merge production
-          git push origin develop
+    - name: Merge production into develop
+      run: |
+        git checkout develop
+        git merge production
+        git push origin develop
 
-      # Step 4: Merge production into homolog
-      - name: Merge production into homolog
-        if: github.ref == 'refs/heads/production'
-        run: |
-          git checkout homolog
-          git merge production
-          git push origin homolog
+    - name: Merge production into homolog
+      run: |
+        git checkout homolog
+        git merge production
+        git push origin homolog
