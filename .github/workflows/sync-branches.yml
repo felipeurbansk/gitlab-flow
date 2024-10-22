@@ -1,0 +1,40 @@
+name: Sync Branches after Production Merge
+
+on:
+  push:
+    branches:
+      - production
+
+permissions:
+  contents: write # Permitir o GitHub Actions fazer push e merge nas branches
+
+jobs:
+  sync_branches:
+    name: Sync production to develop and homolog
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Step 2: Configure Git user
+      - name: Set Git User
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@users.noreply.github.com"
+
+      # Step 3: Merge production into develop
+      - name: Merge production into develop
+        run: |
+          git checkout develop
+          git merge production
+          git push origin develop
+
+      # Step 4: Merge production into homolog
+      - name: Merge production into homolog
+        if: github.ref == 'refs/heads/production'
+        run: |
+          git checkout homolog
+          git merge production
+          git push origin homolog
