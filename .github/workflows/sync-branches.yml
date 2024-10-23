@@ -29,14 +29,14 @@ jobs:
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-    - name: Merge production into develop
-      run: |
-        git checkout develop
-        git merge production
-        git push origin develop
-
     - name: Merge production into homolog
       run: |
         git checkout homolog
         git merge production
         git push origin homolog
+    
+    - name: Merge production into develop
+      run: |
+        git checkout develop
+        git merge production
+        git push origin develop
