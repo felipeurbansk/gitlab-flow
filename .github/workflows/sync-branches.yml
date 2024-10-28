@@ -5,44 +5,26 @@ on:
     branches:
       - production
 
-permissions:
-  contents: write
-  pull-requests: write
-
 jobs:
   sync_branches:
-    name: Sync production to develop and homolog
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Set Git User
-        run: |
-          git config --global user.name "Service Bot Cannect"
-          git config --global user.email "felipeurbansk@gmail.com"
-
-      - name: Create Pull Request for homolog
-        uses: peter-evans/create-pull-request@v7
+      - name: Sync homolog with production
+        uses: repo-sync/github-sync@v2
         with:
-          token: ${{ secrets.ACTIONS_PAT }}
-          commit-message: "Automated merge from production to homolog"
-          title: "Sync production to homolog"
-          body: "This pull request merges changes from production into homolog automatically."
-          base: homolog
-          branch: production
-          delete-branch: false
+          source_repo: ${{ github.repository }}
+          source_branch: "production"
+          destination_branch: "homolog"
+          github_token: ${{ secrets.ACTIONS_PAT }}
 
-      - name: Create Pull Request for develop
-        uses: peter-evans/create-pull-request@v7
+      - name: Sync develop with production
+        uses: repo-sync/github-sync@v2
         with:
-          token: ${{ secrets.ACTIONS_PAT }}
-          commit-message: "Automated merge from production to develop"
-          title: "Sync production to develop"
-          body: "This pull request merges changes from production into develop automatically."
-          base: develop
-          branch: production
-          delete-branch: false
+          source_repo: ${{ github.repository }}
+          source_branch: "production"
+          destination_branch: "develop"
+          github_token: ${{ secrets.ACTIONS_PAT }}
