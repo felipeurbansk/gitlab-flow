@@ -26,7 +26,7 @@ jobs:
           git config --global user.email "felipeurbansk@gmail.com"
 
       - name: Create Pull Request for homolog
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.ACTIONS_PAT }}
           commit-message: "Automated merge from production to homolog"
@@ -37,7 +37,7 @@ jobs:
           delete-branch: false
 
       - name: Create Pull Request for develop
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.ACTIONS_PAT }}
           commit-message: "Automated merge from production to develop"
