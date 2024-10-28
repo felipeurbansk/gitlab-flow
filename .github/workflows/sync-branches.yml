@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: write
+  pull-requests: write
 
 jobs:
   sync_branches:
@@ -14,29 +15,34 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # - name: Setup Node.js
-    #   uses: actions/setup-node@v4
-    #   with:
-    #     node-version: '20'
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
+      - name: Set Git User
+        run: |
+          git config --global user.name "Service Bot Cannect"
+          git config --global user.email "felipeurbansk@gmail.com"
 
-    - name: Set Git User
-      run: |
-        git config --global user.name "github-actions[bot]"
-        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Create Pull Request for homolog
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.ACTIONS_PAT }}
+          commit-message: "Automated merge from production to homolog"
+          title: "Sync production to homolog"
+          body: "This pull request merges changes from production into homolog automatically."
+          base: homolog
+          branch: production
+          delete-branch: false
 
-    - name: Merge production into homolog
-      run: |
-        git checkout homolog
-        git merge production
-        git push origin homolog
-    
-    - name: Merge production into develop
-      run: |
-        git checkout develop
-        git merge production
-        git push origin develop
+      - name: Create Pull Request for develop
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.ACTIONS_PAT }}
+          commit-message: "Automated merge from production to develop"
+          title: "Sync production to develop"
+          body: "This pull request merges changes from production into develop automatically."
+          base: develop
+          branch: production
+          delete-branch: false
